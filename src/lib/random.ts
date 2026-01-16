@@ -50,17 +50,47 @@ export function createRng(seed: number): Rng {
 }
 
 const PALETTES = [
-  { from: '#0b1220', to: '#0e2a3a', accent: '#7aa6ff' },
-  { from: '#0b0f19', to: '#2a174b', accent: '#b892ff' },
-  { from: '#070a12', to: '#1b2a3a', accent: '#80ffd1' },
-  { from: '#071016', to: '#123024', accent: '#a6ff7a' },
-  { from: '#0b0b10', to: '#2a1b12', accent: '#ffcc80' },
+  // dark
+  { from: '#0b1220', to: '#0e2a3a', accent: '#7aa6ff', mode: 'dark' as const },
+  { from: '#0b0f19', to: '#2a174b', accent: '#b892ff', mode: 'dark' as const },
+  { from: '#070a12', to: '#1b2a3a', accent: '#80ffd1', mode: 'dark' as const },
+  { from: '#071016', to: '#123024', accent: '#a6ff7a', mode: 'dark' as const },
+  { from: '#0b0b10', to: '#2a1b12', accent: '#ffcc80', mode: 'dark' as const },
+
+  // light / paper
+  {
+    from: '#fbf7ef',
+    to: '#f2eadb',
+    accent: '#b08a2e',
+    mode: 'light' as const,
+    paper: '#fffdf8',
+  },
+  {
+    from: '#f7fbff',
+    to: '#eef4ff',
+    accent: '#2f5bd6',
+    mode: 'light' as const,
+    paper: '#ffffff',
+  },
+  {
+    from: '#f8faf9',
+    to: '#eef4f1',
+    accent: '#1f7a57',
+    mode: 'light' as const,
+    paper: '#ffffff',
+  },
 ]
 
 export function createDesign(seed: number): StoryDesign {
   const rng = createRng(seed)
 
-  const templates: StoryDesign['template'][] = ['frame', 'center', 'split', 'stack']
+  const templates: StoryDesign['template'][] = [
+    'frame',
+    'center',
+    'split',
+    'stack',
+    'list',
+  ]
   const fonts: StoryDesign['font']['family'][] = ['sans', 'serif']
 
   return {

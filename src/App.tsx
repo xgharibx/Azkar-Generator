@@ -17,6 +17,8 @@ function safeSlug(input: string): string {
 }
 
 export default function App() {
+  const STORY_ITEMS_CAP = 200
+
   const [data, setData] = useState<AtharData | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(true)
@@ -337,7 +339,7 @@ export default function App() {
                           key={m.idx}
                           className="w-full rounded-lg px-2 py-2 text-right text-xs text-white/80 hover:bg-white/10"
                           onClick={() => {
-                            setStoryItems((prev) => [m.item, ...prev].slice(0, 60))
+                            setStoryItems((prev) => [m.item, ...prev].slice(0, STORY_ITEMS_CAP))
                             setAtharSearch('')
                           }}
                           title="إضافة"
@@ -355,7 +357,7 @@ export default function App() {
                   className="w-full rounded-xl bg-white/10 px-3 py-2 text-sm font-bold text-white hover:bg-white/15 disabled:opacity-60"
                   onClick={() => {
                     if (!dhikr) return
-                    setStoryItems((prev) => [dhikr, ...prev].slice(0, 40))
+                    setStoryItems((prev) => [dhikr, ...prev].slice(0, STORY_ITEMS_CAP))
                   }}
                   disabled={!dhikr}
                 >
@@ -422,7 +424,7 @@ export default function App() {
                       count: customCount.trim() || undefined,
                       count_description: customCountDesc.trim() || undefined,
                     }
-                    setStoryItems((prev) => [item, ...prev].slice(0, 40))
+                    setStoryItems((prev) => [item, ...prev].slice(0, STORY_ITEMS_CAP))
                     setCustomText('')
                     setCustomBenefit('')
                     setCustomCount('')
@@ -629,7 +631,7 @@ export default function App() {
                   </button>
                 </div>
                 <div className="mt-1 text-[11px] text-white/45">
-                  تقدر تربط API/AI خارجي يولد صورة ثم تضع الرابط هنا.
+                          setStoryItems(next.slice(0, STORY_ITEMS_CAP))
                 </div>
               </div>
 
@@ -735,26 +737,16 @@ export default function App() {
                 className="aspect-[9/16] w-full overflow-hidden rounded-[28px] border border-white/10 bg-black/20 shadow-soft"
               >
                 {storyItems.length > 0 ? (
-                  <div
-                    style={{
-                      width: 1080,
-                      height: 1920,
-                      transformOrigin: 'top left',
-                      transform:
-                        previewSize.width > 0
-                          ? `scale(${previewSize.width / 1080})`
-                          : 'scale(0.3)',
-                    }}
-                  >
-                    <StoryCanvas
-                      width={1080}
-                      height={1920}
-                      title={storyTitle.trim() || section?.title || 'أذكار'}
-                      items={storyItems}
-                      design={design}
-                      options={options}
-                    />
-                  </div>
+                  <StoryCanvas
+                    width={Math.max(1, Math.round(previewSize.width || 1))}
+                    height={
+                      Math.max(1, Math.round(((previewSize.width || 1) * 16) / 9))
+                    }
+                    title={storyTitle.trim() || section?.title || 'أذكار'}
+                    items={storyItems}
+                    design={design}
+                    options={options}
+                  />
                 ) : (
                   <div className="flex h-full items-center justify-center text-sm text-white/60">
                     أضف أذكاراً للصورة...

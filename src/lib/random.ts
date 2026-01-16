@@ -90,12 +90,28 @@ export function createDesign(seed: number): StoryDesign {
     'split',
     'stack',
     'list',
+    'paper',
   ]
   const fonts: StoryDesign['font']['family'][] = ['sans', 'serif']
 
+  const pickedTemplate = rng.pick(templates)
+  const pickedBg = rng.pick(PALETTES)
+  const background =
+    pickedTemplate === 'paper' && pickedBg.mode !== 'light'
+      ? (
+          {
+            from: '#fbf7ef',
+            to: '#f2eadb',
+            accent: '#b08a2e',
+            mode: 'light' as const,
+            paper: '#fffdf8',
+          } satisfies StoryDesign['background']
+        )
+      : pickedBg
+
   return {
-    template: rng.pick(templates),
-    background: rng.pick(PALETTES),
+    template: pickedTemplate,
+    background,
     font: {
       family: rng.pick(fonts),
     },

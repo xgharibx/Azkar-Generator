@@ -37,24 +37,50 @@ export function StoryCanvas({
   const safeItems = items.filter((i) => i.text.trim().length > 0)
   const effectiveItems = safeItems.slice(0, Math.max(1, options.maxItems || 1))
 
-  const isList = effectiveItems.length > 1 || design.template === 'list'
+  const isPaper = design.template === 'paper'
+  const isList = effectiveItems.length > 1 || design.template === 'list' || isPaper
   const mainSize = chooseMainFontPx(first?.text?.length ?? 0, width)
   const listBase = clamp(22, options.fontSize || 34, 70) * (width / 1080)
   const listLineHeight = clamp(1.15, options.lineHeight || 1.35, 2)
 
   const fontFamily = design.font.family === 'serif' ? 'font-serif' : 'font-sans'
 
-  const textColor = design.background.mode === 'light' ? '#111827' : 'rgba(255,255,255,0.95)'
-  const subTextColor = design.background.mode === 'light' ? 'rgba(17,24,39,0.70)' : 'rgba(255,255,255,0.70)'
-  const dividerColor = design.background.mode === 'light' ? 'rgba(17,24,39,0.10)' : 'rgba(255,255,255,0.10)'
+  const lightInk = isPaper ? '#2b2a26' : '#111827'
+  const textColor = design.background.mode === 'light' ? lightInk : 'rgba(255,255,255,0.95)'
+  const subTextColor =
+    design.background.mode === 'light'
+      ? isPaper
+        ? 'rgba(43,42,38,0.68)'
+        : 'rgba(17,24,39,0.70)'
+      : 'rgba(255,255,255,0.70)'
+  const dividerColor =
+    design.background.mode === 'light'
+      ? isPaper
+        ? 'rgba(43,42,38,0.10)'
+        : 'rgba(17,24,39,0.10)'
+      : 'rgba(255,255,255,0.10)'
 
   const bgStyle: CSSProperties = {
     width,
     height,
-    backgroundImage: `linear-gradient(135deg, ${design.background.from}, ${design.background.to})`,
+    backgroundImage: isPaper
+      ? `linear-gradient(180deg, ${design.background.from}, ${design.background.to})`
+      : options.backgroundImageUrl
+        ? `linear-gradient(135deg, ${design.background.from}cc, ${design.background.to}cc), url(${options.backgroundImageUrl})`
+        : `linear-gradient(135deg, ${design.background.from}, ${design.background.to})`,
+    backgroundSize: options.backgroundImageUrl ? 'cover' : undefined,
+    backgroundPosition: options.backgroundImageUrl ? 'center' : undefined,
   }
 
-  const patternStyle: CSSProperties = design.decorations.showPattern
+  const patternStyle: CSSProperties =
+    isPaper
+      ? {
+          backgroundImage:
+            `radial-gradient(circle at 10% 15%, rgba(176,138,46,0.10) 0 22%, transparent 55%),` +
+            `radial-gradient(circle at 90% 10%, rgba(176,138,46,0.08) 0 18%, transparent 55%),` +
+            `radial-gradient(circle at 85% 85%, rgba(176,138,46,0.08) 0 18%, transparent 55%)`,
+        }
+      : design.decorations.showPattern
     ? {
         backgroundImage:
           (design.background.mode === 'light'
@@ -79,31 +105,50 @@ export function StoryCanvas({
     >
       <div className="absolute inset-0 opacity-80" style={patternStyle} />
 
-      <div
-        className="absolute inset-0"
-        style={{
-          backgroundImage: `radial-gradient(circle at 50% 0%, ${design.background.accent}30, transparent 55%)`,
-        }}
-      />
+      {!isPaper ? (
+        <div
+          className="absolute inset-0"
+          style={{
+            backgroundImage: `radial-gradient(circle at 50% 0%, ${design.background.accent}30, transparent 55%)`,
+          }}
+        />
+      ) : null}
 
       <div className="relative flex h-full w-full flex-col p-[72px]">
         <header className="flex items-center justify-center">
-          <div
-            className="inline-flex items-center gap-3 rounded-full px-6 py-3 text-[32px] font-extrabold"
-            style={{
-              color: textColor,
-              background:
-                design.background.mode === 'light'
-                  ? 'linear-gradient(135deg, rgba(255,255,255,0.85), rgba(255,255,255,0.55))'
-                  : 'linear-gradient(135deg, rgba(255,255,255,0.10), rgba(255,255,255,0.04))',
-              border:
-                design.background.mode === 'light'
-                  ? '1px solid rgba(17,24,39,0.10)'
-                  : '1px solid rgba(255,255,255,0.10)',
-            }}
-          >
-            <span>{title}</span>
-          </div>
+          {isPaper ? (
+            <div className="w-full">
+              <div className="flex items-center justify-between" style={{ color: subTextColor }}>
+                <div className="h-[1px] w-[28%]" style={{ backgroundColor: dividerColor }} />
+                <div className="text-[44px] font-extrabold tracking-tight" style={{ color: textColor }}>
+                  {title}
+                </div>
+                <div className="h-[1px] w-[28%]" style={{ backgroundColor: dividerColor }} />
+              </div>
+              <div className="mt-6 flex items-center justify-center gap-5" style={{ color: subTextColor }}>
+                <span style={{ fontSize: 26, opacity: 0.7 }}>☾</span>
+                <div className="h-[1px] w-[42%]" style={{ backgroundColor: dividerColor }} />
+                <span style={{ fontSize: 26, opacity: 0.7 }}>☾</span>
+              </div>
+            </div>
+          ) : (
+            <div
+              className="inline-flex items-center gap-3 rounded-full px-6 py-3 text-[32px] font-extrabold"
+              style={{
+                color: textColor,
+                background:
+                  design.background.mode === 'light'
+                    ? 'linear-gradient(135deg, rgba(255,255,255,0.85), rgba(255,255,255,0.55))'
+                    : 'linear-gradient(135deg, rgba(255,255,255,0.10), rgba(255,255,255,0.04))',
+                border:
+                  design.background.mode === 'light'
+                    ? '1px solid rgba(17,24,39,0.10)'
+                    : '1px solid rgba(255,255,255,0.10)',
+              }}
+            >
+              <span>{title}</span>
+            </div>
+          )}
         </header>
 
         <main className="flex flex-1 items-center justify-center py-10">
@@ -156,7 +201,7 @@ export function StoryCanvas({
             </div>
           ) : (
             <div
-              className="w-full rounded-[28px] p-10"
+              className="relative w-full rounded-[28px] p-10"
               style={{
                 background:
                   design.background.mode === 'light'
@@ -168,13 +213,28 @@ export function StoryCanvas({
                     : `1px solid rgba(255,255,255,0.14)`,
               }}
             >
+              {isPaper ? (
+                <div
+                  className="pointer-events-none absolute inset-0"
+                  style={{
+                    border: '1px solid rgba(176,138,46,0.25)',
+                    borderRadius: 28,
+                  }}
+                />
+              ) : null}
+
               <div
                 className="grid gap-10"
                 style={{
                   gridTemplateColumns:
-                    options.columns === 2 ? '1fr 1fr' : '1fr',
+                    options.columns === 3
+                      ? '1fr 1fr 1fr'
+                      : options.columns === 2
+                        ? '1fr 1fr'
+                        : '1fr',
                 }}
               >
+                {/* override for 3 columns */}
                 {(() => {
                   const cols = options.columns
                   const perCol = Math.ceil(effectiveItems.length / cols)
@@ -269,17 +329,28 @@ export function StoryCanvas({
         </main>
 
         <footer className="flex items-end justify-between">
-          <div
-            className="text-[22px] font-bold"
-            style={{ color: design.background.mode === 'light' ? 'rgba(17,24,39,0.45)' : 'rgba(255,255,255,0.55)' }}
-          >
-            {options.showWatermark ? options.watermarkText : ''}
-          </div>
-          <div
-            className="text-[22px]"
-            style={{ color: design.background.mode === 'light' ? 'rgba(17,24,39,0.40)' : 'rgba(255,255,255,0.50)' }}
-          >
+          <div className="text-[22px]" style={{ color: subTextColor, opacity: 0.65 }}>
             {options.showWatermark ? 'ATHAR' : ''}
+          </div>
+
+          <div className="flex flex-col items-center">
+            <div
+              className={isPaper ? 'text-[40px] font-extrabold' : 'text-[26px] font-extrabold'}
+              style={{
+                color: subTextColor,
+                opacity: 0.9,
+                letterSpacing: '0.02em',
+              }}
+            >
+              {options.showWatermark ? options.watermarkText : ''}
+            </div>
+            {isPaper ? (
+              <div className="mt-2 h-[1px] w-[180px]" style={{ backgroundColor: dividerColor }} />
+            ) : null}
+          </div>
+
+          <div className="text-[22px]" style={{ color: subTextColor, opacity: 0.55 }}>
+            {options.showWatermark ? 'xgharibx.github.io/ATHAR' : ''}
           </div>
         </footer>
       </div>

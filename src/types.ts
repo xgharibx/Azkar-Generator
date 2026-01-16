@@ -16,7 +16,7 @@ export type AtharData = {
 }
 
 export type StoryDesign = {
-  template: 'frame' | 'center' | 'split' | 'stack' | 'list'
+  template: 'frame' | 'center' | 'split' | 'stack' | 'list' | 'paper'
   background: {
     from: string
     to: string
@@ -40,10 +40,13 @@ export type StoryOptions = {
   watermarkText: string
 
   // Story layout controls
-  columns: 1 | 2
+  columns: 1 | 2 | 3
   maxItems: number
 
   // Typography controls (base for list layouts)
   fontSize: number // px at 1080px width
   lineHeight: number
+
+  // Background control
+  backgroundImageUrl?: string
 }
